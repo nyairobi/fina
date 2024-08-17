@@ -1,0 +1,288 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Server {
+  name        String
+  serverId    String       @id
+  lang        String       @default("en")
+  info        ServerInfo?
+  commandKeys CommandKey[]
+}
+
+model ServerInfo {
+  serverId       String           @id
+  modmailChId    String?          @unique(map: "ServerInfo.modmailChId_unique")
+  pollChId       String?
+  goodbyeChId    String?
+  goodbyeText    String?
+  wiki           String[]
+  server         Server           @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  counters       Counter[]
+  submChannels   PostChannel[]
+  triviaCategory TriviaCategory[]
+}
+
+model Counter {
+  counterId    Int             @id @default(autoincrement())
+  maxValue     Int             @default(1)
+  serverId     String
+  canSelfAward Boolean         @default(false)
+  commandName  String          @default("rep")
+  pluralName   String          @default("reputation points")
+  singuName    String          @default("a reputation point")
+  summaryEmoji String          @default("⭐")
+  summaryName  String          @default("Rep")
+  serverInfo   ServerInfo      @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  entries      CounterEntry[]
+  presets      CounterPreset[]
+}
+
+model CounterPreset {
+  counterId Int
+  title     String
+  value     Int
+  counter   Counter @relation(fields: [counterId], references: [counterId], onDelete: Cascade)
+
+  @@id([counterId, title])
+}
+
+model CounterEntry {
+  userId    String
+  counterId Int
+  title     String?
+  timestamp DateTime
+  value     Int
+  dstMsgUrl String   @id
+  counter   Counter  @relation(fields: [counterId], references: [counterId], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model User {
+  userId         String         @id
+  gamesPlayed    Int            @default(0)
+  mmr            Int            @default(0)
+  counterEntries CounterEntry[]
+  submissions    Post[]
+  votes          PostVote[]
+  deathInfo      UserDeathInfo?
+  arcUser        ArcUser?
+}
+
+model Post {
+  msgId     String      @id
+  channelId String
+  localId   Int
+  userId    String?
+  title     String?
+  score     Int         @default(0)
+  votes     PostVote[]
+  channel   PostChannel @relation(fields: [channelId], references: [channelId], onDelete: Cascade)
+  user      User?       @relation(fields: [userId], references: [userId], onDelete: SetNull)
+}
+
+model PostVote {
+  msgId  String
+  userId String
+  type   PostVoteType
+  post   Post         @relation(fields: [msgId], references: [msgId], onDelete: Cascade)
+  user   User         @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@id([msgId, userId])
+}
+
+model PostChannel {
+  channelId    String                @id
+  serverId     String
+  commandName  String                @default("post")
+  title        String                @default("Post")
+  color        String                @default("#999999")
+  upvote       String                @default("⬆️")
+  downvote     String                @default("⬇️")
+  votingType   PostChannelVotingType @default(NO_VOTES)
+  allowEdits   Boolean               @default(true)
+  allowThreads Boolean               @default(true)
+  server       ServerInfo            @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  fields       PostChannelField[]
+  posts        Post[]
+}
+
+model PostChannelField {
+  channelId   String
+  rank        Int           @default(autoincrement())
+  inputName   String        @default("Default Title")
+  outputName  String?
+  placeholder String        @default("")
+  type        PostFieldType
+  channel     PostChannel   @relation(fields: [channelId], references: [channelId], onDelete: Cascade)
+
+  @@id([channelId, rank])
+}
+
+enum PostChannelVotingType {
+  NO_VOTES
+  UP_DOWN
+  UP_ONLY
+}
+
+enum PostVoteType {
+  UP
+  DOWN
+}
+
+enum PostFieldType {
+  SHORT_TEXT
+  LONG_TEXT
+  ATTACHMENT
+}
+
+model CommandPackage {
+  packageId    String       @id
+  friendlyName String       @default("No name")
+  description  String       @default("No description")
+  hidden       Boolean      @default(false)
+  commandKeys  CommandKey[]
+}
+
+model CommandKey {
+  key          String         @id
+  friendlyName String         @default("No name")
+  description  String         @default("No description")
+  packageId    String
+  server       Server[]
+  package      CommandPackage @relation(fields: [packageId], references: [packageId], onDelete: Cascade)
+}
+
+model UserDeathInfo {
+  userId     String   @id
+  lostCells  Int      @default(0)
+  startDate  DateTime
+  endDate    DateTime
+  deathCount Int      @default(0)
+  user       User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model Trivia {
+  triviaId   Int            @id @default(autoincrement())
+  categoryId Int
+  author     String?
+  content    String
+  title      String?
+  thumb      String?
+  image      String?
+  category   TriviaCategory @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)
+}
+
+model TriviaCategory {
+  categoryId   Int         @id @default(autoincrement())
+  categoryName String
+  serverId     String?     @unique(map: "TriviaCategory_serverId_unique")
+  color        String?
+  server       ServerInfo? @relation(fields: [serverId], references: [serverId], onDelete: Cascade)
+  trivias      Trivia[]
+}
+
+model Poll {
+  messageId    String       @id
+  channelId    String
+  guildId      String
+  authorId     String
+  imageURL     String?
+  liveUpdate   Boolean      @default(false)
+  minChoices   Int          @default(1)
+  maxChoices   Int          @default(0)
+  freeToInsert Boolean      @default(false)
+  rolePoll     Boolean      @default(false)
+  title        String       @default("Untitled")
+  endTime      DateTime?
+  choices      PollChoice[]
+  votes        PollVote[]
+}
+
+model PollChoice {
+  messageId String
+  userId    String
+  key       String
+  text      String
+  timestamp DateTime   @default(now())
+  poll      Poll       @relation(fields: [messageId], references: [messageId], onDelete: Cascade)
+  votes     PollVote[]
+
+  @@id([messageId, key])
+}
+
+model PollVote {
+  userId    String
+  messageId String
+  key       String
+  pending   Boolean     @default(false)
+  timestamp DateTime    @default(now())
+  poll      Poll        @relation(fields: [messageId], references: [messageId], onDelete: Cascade)
+  choice    PollChoice? @relation(fields: [messageId, key], references: [messageId, key], onDelete: Cascade)
+
+  @@id([userId, messageId, key])
+}
+
+model ArcUser {
+  userId     String              @id
+  arcId      Int
+  arcName    String
+  ptt        Float               @default(1.0)
+  b30        Float?
+  timestamp  DateTime            @default(now())
+  user       User                @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  ownerships ArcChartOwnership[]
+}
+
+enum ArcPackType {
+  MAIN
+  MAIN_STORY
+  SIDE_STORY
+  COLLAB
+}
+
+model ArcPack {
+  packName    String      @id
+  packApiName String?
+  charts      ArcChart[]
+  type        ArcPackType @default(MAIN)
+}
+
+enum ArcChartColor {
+  LIGHT
+  DARK
+  COLORLESS
+}
+
+model ArcChart {
+  apiName       String
+  tier          Int
+  name          String
+  chartConstant Int
+  packName      String
+  lightBg       String              @default("")
+  darkBg        String              @default("")
+  color         ArcChartColor       @default(LIGHT)
+  isWorld       Boolean             @default(false)
+  coverArt      String?
+  pack          ArcPack             @relation(fields: [packName], references: [packName], onDelete: Cascade)
+  ownerships    ArcChartOwnership[]
+
+  @@id([apiName, tier])
+}
+
+model ArcChartOwnership {
+  userId  String
+  apiName String
+  tier    Int
+  user    ArcUser  @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  chart   ArcChart @relation(fields: [apiName, tier], references: [apiName, tier], onDelete: Cascade)
+
+  @@id([userId, apiName, tier])
+}

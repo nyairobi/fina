@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "ArcUser" ADD COLUMN     "b30" DOUBLE PRECISION;

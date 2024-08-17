@@ -1,0 +1,29 @@
+{
+    "Basic": {
+        "path": "basic",
+        "name": "a match of Rock-Paper-Scissors",
+        "types": [
+            {
+                "path": "rock",
+                "name": "Rock",
+                "emoji": "🪨",
+                "color": "#f26651",
+                "buttonStyle": "DANGER"
+            },
+            {
+                "path": "paper",
+                "name": "Paper",
+                "emoji": "📰",
+                "color": "#8063bd",
+                "buttonStyle": "PRIMARY"
+            },
+            {
+                "path": "scissors",
+                "name": "Scissors",
+                "emoji": "✂️",
+                "color": "#a0d593",
+                "buttonStyle": "SUCCESS"
+            }
+        ]
+    }
+}

@@ -1,0 +1,91 @@
+{
+    "Basic": {
+        "path": "basic",
+        "name": "a match of Rock-Paper-Scissors",
+        "types": [
+            {
+                "path": "rock",
+                "name": "Rock",
+                "emoji": "🪨",
+                "color": "#f26651",
+                "buttonStyle": "DANGER"
+            },
+            {
+                "path": "paper",
+                "name": "Paper",
+                "emoji": "📰",
+                "color": "#8063bd",
+                "buttonStyle": "PRIMARY"
+            },
+            {
+                "path": "scissors",
+                "name": "Scissors",
+                "emoji": "✂️",
+                "color": "#a0d593",
+                "buttonStyle": "SUCCESS"
+            }
+        ]
+    },
+    "Dead Cells (Standard)": {
+        "path": "dead_cells",
+        "name": "a duel",
+        "types": [
+            {
+                "path": "red",
+                "name": "Brutality",
+                "emoji": "<:brutality:683157658944929867>",
+                "color": "#4f0307",
+                "buttonStyle": "DANGER"
+            },
+            {
+                "path": "purple",
+                "name": "Tactics",
+                "emoji": "<:tactics:683157659402371082>",
+                "color": "#3d1e60",
+                "buttonStyle": "PRIMARY"
+            },
+            {
+                "path": "green",
+                "name": "Survival",
+                "emoji": "<:survival:683157658693664810>",
+                "color": "#094f2d",
+                "buttonStyle": "SUCCESS"
+            }
+        ]
+    },
+    "Dead Cells (Cursed)": {
+        "path": "dead_cells",
+        "name": "a duel",
+        "types": [
+            {
+                "path": "red",
+                "name": "Brutality",
+                "emoji": "<:brutality:683157658944929867>",
+                "color": "#4f0307",
+                "buttonStyle": "DANGER"
+            },
+            {
+                "path": "purple",
+                "name": "Tactics",
+                "emoji": "<:tactics:683157659402371082>",
+                "color": "#3d1e60",
+                "buttonStyle": "PRIMARY"
+            },
+            {
+                "path": "green",
+                "name": "Survival",
+                "emoji": "<:survival:683157658693664810>",
+                "color": "#094f2d",
+                "buttonStyle": "SUCCESS"
+            },
+            {
+                "path": "white",
+                "name": "Colorless",
+                "emoji": "<:cursedface:476080300045107220>",
+                "color": "#333333",
+                "buttonStyle": "SECONDARY",
+                "supercolor": "#5a5e1e"
+            }
+        ]
+    }
+}

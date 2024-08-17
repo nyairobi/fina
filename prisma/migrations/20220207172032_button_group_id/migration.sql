@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Button" ADD COLUMN     "groupId" INTEGER NOT NULL DEFAULT 0;

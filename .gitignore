@@ -1,0 +1,11 @@
+.git/
+node_modules/
+log/*
+lib/*
+src/web/*
+.env
+*.sh
+*.traineddata
+tsbuildincr
+*.code-workspace
+src/scripts/*
